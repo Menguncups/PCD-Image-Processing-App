@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Info Tim Developer - Sistem Image Processing (SIMPRO)</title>
+  <link rel="icon" type="image/png" href="static/img/logo.png">
+  <link rel="stylesheet" href="static/css/app.css">
+</head>
+<body class="">
+<div class="aplikasi tentang-buka" id="aplikasi">
+  <aside class="sisi" id="sisi" aria-label="Menu aplikasi">
+    <div class="merek">
+      <img class="merek-tanda" src="static/img/logo.png" alt="" width="34" height="34">
+      <div class="merek-teks">
+        <p class="merek-nama">Sistem Image Processing (SIMPRO)</p>
+        <p class="merek-sub">Copyright © Mengasah (2026)</p>
+      </div>
+      <button class="tombol ikon tutup-sisi hanya-sempit" type="button" id="btn-tutup-sisi"
+              aria-label="Tutup menu" title="Tutup menu">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="pohon" id="pohon" aria-label="Menu operasi">
+      <ul class="cabang">
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Basic Ops" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Basic Ops</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.negative">
+            <span class="label">Negative</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Arithmetic" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Arithmetic</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.add">
+            <span class="label">Add (+)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.subtract">
+            <span class="label">Subtract (-)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.multiply">
+            <span class="label">Multiply (*)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.divide">
+            <span class="label">Divide (/)</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Boolean" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Boolean</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.boolean_not">
+            <span class="label">NOT</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.boolean_and">
+            <span class="label">AND</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.boolean_or">
+            <span class="label">OR</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.boolean_xor">
+            <span class="label">XOR</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Geometrics" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Geometrics</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="geom.translation">
+            <span class="label">Translation</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="geom.rotation">
+            <span class="label">Rotation</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="geom.zooming">
+            <span class="label">Zooming</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="geom.flipping">
+            <span class="label">Flipping</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="geom.cropping">
+            <span class="label">Cropping</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.thresholding">
+            <span class="label">Thresholding</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.convolution">
+            <span class="label">Convolution</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="basic.fourier">
+            <span class="label">Fourier Transform</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Colouring" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Colouring</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.binary">
+            <span class="label">Binary</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.grayscale">
+            <span class="label">Grayscale</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.rgb">
+            <span class="label">RGB</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.hsv">
+            <span class="label">HSV</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.cmy">
+            <span class="label">CMY</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.yuv">
+            <span class="label">YUV</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.yiq">
+            <span class="label">YIQ</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="color.pseudo">
+            <span class="label">Pseudo</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Enhancement" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Enhancement</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.brightness">
+            <span class="label">Brightness</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.contrast">
+            <span class="label">Contrast</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.hist_equalization">
+            <span class="label">Hist. Equalization</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Smoothing" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Smoothing</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Spatial Domain" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Spatial Domain</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.lowpass">
+            <span class="label">Lowpass Filtering</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.median">
+            <span class="label">Median Filtering</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Frequency Domain" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Frequency Domain</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="freq.ilpf">
+            <span class="label">ILPF</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="freq.blpf">
+            <span class="label">BLPF</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Sharpening" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Sharpening</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Spatial Domain" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Spatial Domain</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.highpass">
+            <span class="label">Highpass Filtering</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.highboost">
+            <span class="label">Highboost Filtering</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Frequency Domain" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Frequency Domain</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="freq.ihpf">
+            <span class="label">IHPF</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="freq.bhpf">
+            <span class="label">BHPF</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="enh.geom_correction">
+            <span class="label">Geometrics correction</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Noise" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Noise</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.gaussian">
+            <span class="label">Gaussian Noise</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.rayleigh">
+            <span class="label">Rayleigh Noise</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.erlang">
+            <span class="label">Erlang (Gamma) Noise</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.exponential">
+            <span class="label">Exponential Noise</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.uniform">
+            <span class="label">Uniform Noise</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="noise.impulse">
+            <span class="label">Impulse Noise</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Edge Detection" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Edge Detection</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="1st Differential Gradient" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">1st Differential Gradient</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.sobel">
+            <span class="label">Sobel</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.prewitt">
+            <span class="label">Prewitt</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.roberts">
+            <span class="label">Robert</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="2nd Differential Gradient" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">2nd Differential Gradient</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.laplacian">
+            <span class="label">Laplacian</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.log">
+            <span class="label">Laplacian of Gaussian (LoG)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.canny">
+            <span class="label">Canny</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Compass" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Compass</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="edge.compass">
+            <span class="label">Compass</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Segmentation" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Segmentation</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.otsu">
+            <span class="label">Global Threshold (Otsu)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.adaptive_mean">
+            <span class="label">Adaptive Threshold (Mean)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.adaptive_gaussian">
+            <span class="label">Adaptive Threshold (Gaussian)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.multi_otsu">
+            <span class="label">Multi-Level Otsu (3 kelas)</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.highlight">
+            <span class="label">Highlight Segmentation</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="seg.contour">
+            <span class="label">Kontur (Find &amp; Draw)</span>
+          </button>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="About" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">About</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <button class="baris daun" type="button" data-action="about.info">
+            <span class="label">Info Tim Developer</span>
+          </button>
+        
+      </li>
+    
+  
+    
+      <li class="grup">
+        <button class="baris grup-baris" type="button" data-toggle
+                data-grup="Link" aria-expanded="false">
+          
+<svg class="panah" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          <span class="label">Link</span>
+        </button>
+        <div class="anak" hidden>
+          
+<ul class="cabang">
+  
+    
+      
+      <li>
+        
+          <a class="baris daun" href="https://github.com/Menguncups/PCD-Image-Processing-App" target="_blank"
+             rel="noopener noreferrer">
+            <span class="label">Link Github</span>
+            
+<svg class="ikon-luar" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4.5 2H2.5A1 1 0 0 0 1.5 3v6.5a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1V7.5"
+        fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path>
+  <path d="M7 1.5h3.5V5M10.5 1.5L5.5 6.5" fill="none" stroke="currentColor"
+        stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          </a>
+        
+      </li>
+    
+  
+    
+      
+      <li>
+        
+          <a class="baris daun" href="https://www.youtube.com/@username" target="_blank"
+             rel="noopener noreferrer">
+            <span class="label">Link Youtube</span>
+            
+<svg class="ikon-luar" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4.5 2H2.5A1 1 0 0 0 1.5 3v6.5a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1V7.5"
+        fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path>
+  <path d="M7 1.5h3.5V5M10.5 1.5L5.5 6.5" fill="none" stroke="currentColor"
+        stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+
+          </a>
+        
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+        </div>
+      </li>
+    
+  
+</ul>
+
+    </nav>
+
+    <div class="sisi-kaki">
+      <span>59 operasi</span>
+      <span>v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="tirai" id="tirai" hidden></div>
+
+  <main class="utama">
+    <header class="topbar">
+      <button class="tombol ikon hanya-sempit" type="button" id="btn-sisi"
+              aria-label="Buka menu" aria-controls="sisi" aria-expanded="false">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round"></path>
+        </svg>
+      </button>
+
+      <p class="remah" id="remah">About / Info Tim Developer</p>
+    </header>
+
+    <div class="gulir" id="gulir">
+      <section class="kartu kartu-tentang" id="panel-tentang"
+               aria-label="Tentang aplikasi">
+<div class="tentang-kepala">
+  <img class="merek-tanda besar" src="static/img/logo.png" alt="" width="56" height="56">
+  <div>
+    <h1>Sistem Image Processing (SIMPRO)</h1>
+    <p class="tentang-sub">Copyright © Mengasah (2026)</p>
+  </div>
+</div>
+
+<p class="tentang-deskripsi">Aplikasi pengolahan citra digital dengan 56 operasi citra, enhancement, noise, deteksi tepi, dan segmentasi. Setiap operasi citra menampilkan rumus pada panel parameter dan hasilnya pada kartu Hasil. Operasi Geometric hanya berjalan lewat tombol Jalankan. Citra B hanya ditampilkan untuk operasi yang membutuhkan dua citra, dan panel parameter selalu terbuka, termasuk saat Citra B belum dimuat.</p>
+
+<section>
+  <h2>Tim pengembang</h2>
+  <ul class="daftar-tim">
+    
+      <li>Afdhal Fidi Ansori</li>
+    
+      <li>Muhammad Rifqi Fathurrahman</li>
+    
+      <li>Yusuf Budiawan Azri</li>
+    
+  </ul>
+</section>
+
+<section>
+  <h2>Cara memakai</h2>
+  <ol class="daftar-langkah">
+    <li>Muat Citra A sebagai citra utama. Operasi juga boleh dipilih lebih dulu; setelah Citra A dimuat, form operasi yang tertunda otomatis terbuka.</li>
+    <li>Kartu parameter selalu tampil di bawah kartu citra. Sebelum operasi dipilih, kartu berisi petunjuk dan tombol Jalankan nonaktif. Di desktop, sidebar selalu terbuka; di layar sempit, sidebar menjadi laci yang ditutup lewat tombol X.</li>
+    <li>Pilih operasi pada menu sidebar. Bila operasi membutuhkan dua citra, kartu Citra B muncul meski belum diisi, bahkan sebelum Citra A dimuat; form parameter tetap terbuka dan tampilan menggulir ke kartu B. Muat Citra B dengan ukuran yang sama.</li>
+    <li>Pada Add, Subtract, Multiply, dan Divide, pilih Jenis operan. Citra + Citra memakai Citra B, sedangkan Citra + Skalar hanya memakai Citra A dan satu nilai angka tanpa memeriksa Citra B. Hasil aritmetika selalu di-clip ke rentang 0-255.</li>
+    <li>Isi parameter. Rumus operasi tampil di panel parameter dan dirender dengan KaTeX. Operasi ringan non-Geometric langsung memperbarui pratinjau saat penggeser digeser. Operasi berat dan seluruh operasi Geometric memakai tombol Jalankan tanpa pratinjau otomatis. Panel parameter tetap terbuka setelah hasil muncul.</li>
+    <li>Periksa hasil pada kartu Hasil. Label menunjukkan dimensi, jumlah kanal, dan skala hasil terhadap Citra A. Klik Tutup di kanan atas kepala kartu untuk membuang hasil. Kartu Hasil tidak menampilkan tombol Bandingkan atau Unduh.</li>
+    
+    <li>Tombol Terapkan sedang disembunyikan pada konfigurasi ini. Save dan Save As pada menu File tetap menyimpan Citra A, bukan hasil operasi.</li>
+    
+    <li>Reset mengembalikan Citra A ke citra awal. Undo tersedia untuk membatalkan penerapan terakhir bila fitur Terapkan diaktifkan.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Teknologi</h2>
+  <p class="tentang-teks">
+    Flask untuk server web, NumPy dan OpenCV untuk pengolahan citra,
+    SciPy untuk operasi morfologi dan pengisian rongga, KaTeX 0.19.1
+    yang disimpan lokal untuk rumus, serta HTML, CSS, dan JavaScript tanpa
+    kerangka kerja tambahan untuk antarmuka.
+  </p>
+</section>
+
+<footer class="tentang-kaki">© 2026 Mengasah. Hak cipta dilindungi.</footer>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script id="data-aplikasi" type="application/json">{"github": "https://github.com/Menguncups/PCD-Image-Processing-App", "youtube": "https://www.youtube.com/@username", "batas_hasil_piksel": 80000000, "aksi_butuh_b": ["basic.boolean_and", "basic.boolean_or", "basic.boolean_xor"]}</script>
+<div class="kabar" id="kabar" role="status" aria-live="polite" hidden></div>
+<script src="static/js/core.js" defer></script>
+<script src="static/js/sidebar.js" defer></script>
+<script src="static/js/parameter.js" defer></script>
+<script src="static/js/actions.js" defer></script>
+</body>
+</html>
