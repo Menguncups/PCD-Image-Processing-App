@@ -1,0 +1,365 @@
+{
+  "menu": [
+    {
+      "label": "File",
+      "sidebar": false,
+      "items": [
+        {
+          "label": "Open...",
+          "action": "file.open"
+        },
+        {
+          "label": "Save",
+          "action": "file.save"
+        },
+        {
+          "label": "Save As",
+          "action": "file.save_as"
+        },
+        {
+          "separator": true
+        },
+        {
+          "label": "Exit",
+          "action": "file.exit"
+        }
+      ]
+    },
+    {
+      "label": "Basic Ops",
+      "items": [
+        {
+          "label": "Negative",
+          "action": "basic.negative"
+        },
+        {
+          "label": "Arithmetic",
+          "items": [
+            {
+              "label": "Add (+)",
+              "action": "basic.add"
+            },
+            {
+              "label": "Subtract (-)",
+              "action": "basic.subtract"
+            },
+            {
+              "label": "Multiply (*)",
+              "action": "basic.multiply"
+            },
+            {
+              "label": "Divide (/)",
+              "action": "basic.divide"
+            }
+          ]
+        },
+        {
+          "label": "Boolean",
+          "items": [
+            {
+              "label": "NOT",
+              "action": "basic.boolean_not"
+            },
+            {
+              "label": "AND",
+              "action": "basic.boolean_and"
+            },
+            {
+              "label": "OR",
+              "action": "basic.boolean_or"
+            },
+            {
+              "label": "XOR",
+              "action": "basic.boolean_xor"
+            }
+          ]
+        },
+        {
+          "label": "Geometrics",
+          "items": [
+            {
+              "label": "Translation",
+              "action": "geom.translation"
+            },
+            {
+              "label": "Rotation",
+              "action": "geom.rotation"
+            },
+            {
+              "label": "Zooming",
+              "action": "geom.zooming"
+            },
+            {
+              "label": "Flipping",
+              "action": "geom.flipping"
+            },
+            {
+              "label": "Cropping",
+              "action": "geom.cropping"
+            }
+          ]
+        },
+        {
+          "label": "Thresholding",
+          "action": "basic.thresholding"
+        },
+        {
+          "label": "Convolution",
+          "action": "basic.convolution"
+        },
+        {
+          "label": "Fourier Transform",
+          "action": "basic.fourier"
+        },
+        {
+          "label": "Colouring",
+          "items": [
+            {
+              "label": "Binary",
+              "action": "color.binary"
+            },
+            {
+              "label": "Grayscale",
+              "action": "color.grayscale"
+            },
+            {
+              "label": "RGB",
+              "action": "color.rgb"
+            },
+            {
+              "label": "HSV",
+              "action": "color.hsv"
+            },
+            {
+              "label": "CMY",
+              "action": "color.cmy"
+            },
+            {
+              "label": "YUV",
+              "action": "color.yuv"
+            },
+            {
+              "label": "YIQ",
+              "action": "color.yiq"
+            },
+            {
+              "label": "Pseudo",
+              "action": "color.pseudo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Enhancement",
+      "items": [
+        {
+          "label": "Brightness",
+          "action": "enh.brightness"
+        },
+        {
+          "label": "Contrast",
+          "action": "enh.contrast"
+        },
+        {
+          "label": "Hist. Equalization",
+          "action": "enh.hist_equalization"
+        },
+        {
+          "label": "Smoothing",
+          "items": [
+            {
+              "label": "Spatial Domain",
+              "items": [
+                {
+                  "label": "Lowpass Filtering",
+                  "action": "enh.lowpass"
+                },
+                {
+                  "label": "Median Filtering",
+                  "action": "enh.median"
+                }
+              ]
+            },
+            {
+              "label": "Frequency Domain",
+              "items": [
+                {
+                  "label": "ILPF",
+                  "action": "freq.ilpf"
+                },
+                {
+                  "label": "BLPF",
+                  "action": "freq.blpf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Sharpening",
+          "items": [
+            {
+              "label": "Spatial Domain",
+              "items": [
+                {
+                  "label": "Highpass Filtering",
+                  "action": "enh.highpass"
+                },
+                {
+                  "label": "Highboost Filtering",
+                  "action": "enh.highboost"
+                }
+              ]
+            },
+            {
+              "label": "Frequency Domain",
+              "items": [
+                {
+                  "label": "IHPF",
+                  "action": "freq.ihpf"
+                },
+                {
+                  "label": "BHPF",
+                  "action": "freq.bhpf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Geometrics correction",
+          "action": "enh.geom_correction"
+        }
+      ]
+    },
+    {
+      "label": "Noise",
+      "items": [
+        {
+          "label": "Gaussian Noise",
+          "action": "noise.gaussian"
+        },
+        {
+          "label": "Rayleigh Noise",
+          "action": "noise.rayleigh"
+        },
+        {
+          "label": "Erlang (Gamma) Noise",
+          "action": "noise.erlang"
+        },
+        {
+          "label": "Exponential Noise",
+          "action": "noise.exponential"
+        },
+        {
+          "label": "Uniform Noise",
+          "action": "noise.uniform"
+        },
+        {
+          "label": "Impulse Noise",
+          "action": "noise.impulse"
+        }
+      ]
+    },
+    {
+      "label": "Edge Detection",
+      "items": [
+        {
+          "label": "1st Differential Gradient",
+          "items": [
+            {
+              "label": "Sobel",
+              "action": "edge.sobel"
+            },
+            {
+              "label": "Prewitt",
+              "action": "edge.prewitt"
+            },
+            {
+              "label": "Robert",
+              "action": "edge.roberts"
+            }
+          ]
+        },
+        {
+          "label": "2nd Differential Gradient",
+          "items": [
+            {
+              "label": "Laplacian",
+              "action": "edge.laplacian"
+            },
+            {
+              "label": "Laplacian of Gaussian (LoG)",
+              "action": "edge.log"
+            },
+            {
+              "label": "Canny",
+              "action": "edge.canny"
+            }
+          ]
+        },
+        {
+          "label": "Compass",
+          "items": [
+            {
+              "label": "Compass",
+              "action": "edge.compass"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Segmentation",
+      "items": [
+        {
+          "label": "Global Threshold (Otsu)",
+          "action": "seg.otsu"
+        },
+        {
+          "label": "Adaptive Threshold (Mean)",
+          "action": "seg.adaptive_mean"
+        },
+        {
+          "label": "Adaptive Threshold (Gaussian)",
+          "action": "seg.adaptive_gaussian"
+        },
+        {
+          "label": "Multi-Level Otsu (3 kelas)",
+          "action": "seg.multi_otsu"
+        },
+        {
+          "label": "Highlight Segmentation",
+          "action": "seg.highlight"
+        },
+        {
+          "label": "Kontur (Find & Draw)",
+          "action": "seg.contour"
+        }
+      ]
+    },
+    {
+      "label": "About",
+      "items": [
+        {
+          "label": "Info Tim Developer",
+          "action": "about.info"
+        },
+        {
+          "label": "Link",
+          "items": [
+            {
+              "label": "Link Github",
+              "action": "about.github"
+            },
+            {
+              "label": "Link Youtube",
+              "action": "about.youtube"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

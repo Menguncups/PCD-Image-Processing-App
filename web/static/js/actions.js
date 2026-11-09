@@ -5,88 +5,39 @@
 
   // ----------------------------------------------------------------- unggah
 
-  const EKSTENSI_DITERIMA = new Set(["png", "jpg", "jpeg", "bmp", "tif", "tiff"]);
-
   function klikUnggah(slot) {
     const masukan = el(`[data-unggah="${slot}"]`);
-    if (masukan) {
-      masukan.click();
-    } else {
-      window.location.href = "index.html";
-    }
+    if (masukan) masukan.click();
   }
 
-  function unggah(slot, berkas) {
+  async function unggah(slot, berkas) {
     if (!berkas) return;
-    const nama = berkas.name || `citra-${slot}.png`;
-    const akhiran = nama.split(".").pop().toLowerCase();
-    if (!EKSTENSI_DITERIMA.has(akhiran)) {
-      kabar("Format berkas tidak didukung. Gunakan PNG, JPEG, BMP, atau TIFF.", "galat");
-      return;
-    }
-
     const kartu = el(`[data-slot="${slot}"]`);
     if (kartu) kartu.classList.add("memuat");
 
-    const url = URL.createObjectURL(berkas);
-    const img = new Image();
-
-    const selesaiMuat = (lebar, tinggi) => {
-      if (state.info[slot] && state.info[slot].url) {
-        try {
-          URL.revokeObjectURL(state.info[slot].url);
-        } catch {
-          /* abaikan */
-        }
-      }
-
-      const formatAsal =
-        akhiran === "jpeg"
-          ? "jpg"
-          : akhiran === "tif" || akhiran === "tiff"
-            ? "tiff"
-            : akhiran;
-
-      state.info[slot] = {
-        nama,
-        lebar,
-        tinggi,
-        kanal: 3,
-        url,
-        format_asal: formatAsal,
-        versi: (state.info.versi || 0) + 1,
-      };
-      state.info.versi = state.info[slot].versi;
-
-      terapkanState(state.info);
-      if (kartu) kartu.classList.remove("memuat");
-
-      const pesan =
-        slot === "a" ? `Dimuat: ${nama}` : `Citra referensi dimuat: ${nama}`;
-      kabar(pesan, "sukses");
+    try {
+      const data = new FormData();
+      data.append("berkas", berkas);
+      const hasil = await api(`/api/unggah/${slot}`, { method: "POST", body: data });
+      terapkanState(hasil.state);
+      kabar(hasil.pesan, "sukses");
 
       const tertunda = state.aksiTertunda;
       if (slot === "a" && tertunda) {
         state.aksiTertunda = null;
-        jalankanAksi(tertunda);
+        await jalankanAksi(tertunda);
       } else if (
         slot === "a" &&
         state.operasi &&
         state.operasi.startsWith("geom.")
       ) {
-        jalankanAksi(state.operasi);
+        await jalankanAksi(state.operasi);
       }
-    };
-
-    img.onload = () => {
-      selesaiMuat(img.naturalWidth || 512, img.naturalHeight || 512);
-    };
-    img.onerror = () => {
+    } catch (galat) {
+      kabar(galat.message, "galat");
+    } finally {
       if (kartu) kartu.classList.remove("memuat");
-      URL.revokeObjectURL(url);
-      kabar("Citra tidak dapat dibaca. Pastikan berkas bukan hasil rusak.", "galat");
-    };
-    img.src = url;
+    }
   }
 
   // --------------------------------------------------------------- unduhan
@@ -113,6 +64,12 @@
     return titik > 0 ? tanpaJalur.slice(0, titik) : tanpaJalur;
   }
 
+  function pemicuUnduh(slot, format, nama) {
+    const params = new URLSearchParams({ slot, format });
+    if (nama) params.set("nama", nama);
+    window.location.href = `/api/unduh?${params.toString()}`;
+  }
+
   function formatAsalSlot(slot) {
     if (state.info && state.info[slot] && state.info[slot].format_asal) {
       return state.info[slot].format_asal;
@@ -128,6 +85,12 @@
       kabar("Belum ada hasil yang bisa disimpan.", "galat");
       return;
     }
+    const format = formatAsalSlot("a");
+    const namaA = state.info && state.info.a && state.info.a.nama ? namaDasar(state.info.a.nama) : "citra";
+    const namaB = state.info && state.info.b && state.info.b.nama ? namaDasar(state.info.b.nama) : "";
+    let nama = namaB ? `hasil-${namaA}-${namaB}` : `hasil-${namaA}`;
+    const dasar = namaDasar(nama) || "hasil";
+    pemicuUnduh("hasil", format, `${dasar}${ekstensiFormat(format)}`);
   }
 
   function simpanLangsung() {
@@ -136,14 +99,12 @@
       kabar(PESAN_CITRA_KOSONG, "galat");
       return;
     }
+    const format = formatAsalSlot("a");
+    const akar = namaDasar(info.nama) || "citra";
+    pemicuUnduh("a", format, `${akar}${ekstensiFormat(format)}`);
   }
 
   function bukaUnduh(slot, mode = "save_as") {
-    const dlg = el("#dlg-unduh");
-    if (!dlg) {
-      window.location.href = "index.html";
-      return;
-    }
     if (!(state.info && state.info[slot])) {
       kabar(PESAN_CITRA_KOSONG, "galat");
       return;
@@ -176,12 +137,23 @@
     };
     el("#ket-unduh").textContent =
       `${keterangan[slot] || ""} Pilih nama dan format berkas.`;
-    dlg.showModal();
+    el("#dlg-unduh").showModal();
     el("#nama-unduh").focus();
     el("#nama-unduh").select();
   }
 
   // -------------------------------------------------------------- tindakan
+
+  async function aksiSederhana(alamat, setelahSukses) {
+    try {
+      const data = await api(alamat, { method: "POST" });
+      terapkanState(data.state);
+      kabar(data.pesan, "sukses");
+      if (setelahSukses) setelahSukses();
+    } catch (galat) {
+      kabar(galat.message, "galat");
+    }
+  }
 
   const AKSI_KHUSUS = {
     "file.open": () => klikUnggah("a"),
@@ -192,106 +164,87 @@
     "about.youtube": () => window.open(DATA.youtube, "_blank", "noopener"),
   };
 
-  function intAtau(nilai, baku) {
-    const n = parseInt(nilai, 10);
-    return Number.isFinite(n) && n > 0 ? n : baku;
+  function labelAksi(action) {
+    const daun = el(`[data-action="${CSS.escape(action)}"]`);
+    if (!daun) return action;
+    const label = el(":scope > .label", daun);
+    return label ? label.textContent.trim() : action;
   }
 
-  function siapkanDataOperasi(action) {
-    const asal = DAFTAR_OPERASI[action];
-    if (!asal) return null;
+  function tampilkanTertunda(action) {
+    hentikanPratinjau();
+    state.operasi = null;
+    state.preset = {};
+    state.pratinjau = false;
+    state.pratinjauAwal = false;
+    state.pratinjauSibuk = false;
+    state.pesanValidasi = "";
+    aturButuhB(AKSI_BUTUH_B.has(action));
 
-    const salinan = JSON.parse(JSON.stringify(asal));
-    const infoA = state.info && state.info.a;
-    if (!infoA) return salinan;
-
-    const lebar = intAtau(infoA.lebar, 512);
-    const tinggi = intAtau(infoA.tinggi, 512);
-
-    if (salinan.action === "geom.translation") {
-      for (const p of salinan.params) {
-        if (p.kunci === "geser_x") {
-          p.minimum = -lebar;
-          p.maksimum = lebar;
-          p.nilai = 0;
-        } else if (p.kunci === "geser_y") {
-          p.minimum = -tinggi;
-          p.maksimum = tinggi;
-          p.nilai = 0;
-        }
-      }
-    } else if (salinan.action === "geom.cropping") {
-      for (const p of salinan.params) {
-        if (p.kunci === "x1") {
-          p.minimum = 0;
-          p.maksimum = lebar;
-          p.nilai = 0;
-        } else if (p.kunci === "y1") {
-          p.minimum = 0;
-          p.maksimum = tinggi;
-          p.nilai = 0;
-        } else if (p.kunci === "x2") {
-          p.minimum = 0;
-          p.maksimum = lebar;
-          p.nilai = lebar;
-        } else if (p.kunci === "y2") {
-          p.minimum = 0;
-          p.maksimum = tinggi;
-          p.nilai = tinggi;
-        }
-      }
-    }
-    return salinan;
+    const daun = el(`[data-action="${CSS.escape(action)}"]`);
+    const jalur = daun ? jalurElemen(daun).join(" / ") : action;
+    el("#judul-operasi").textContent = labelAksi(action);
+    el("#jalur-operasi").textContent = jalur;
+    const butuhB = AKSI_BUTUH_B.has(action);
+    const aritmetika = action.startsWith("basic.add") || action.startsWith("basic.subtract") ||
+                       action.startsWith("basic.multiply") || action.startsWith("basic.divide");
+    el("#ketik-operasi").textContent = butuhB
+      ? (aritmetika
+         ? "Operasi menunggu Citra A. Pilih Citra + Citra untuk memerlukan Citra B."
+         : "Operasi menunggu Citra A. Citra B boleh diunggah lebih dahulu.")
+      : "Operasi menunggu Citra A. Unggah Citra A untuk membuka parameter.";
+    tampilkanRumus("");
+    el("#grid-parameter").innerHTML = "";
+    el("#btn-batal-parameter").disabled = false;
+    el("#tombol-jalankan").hidden = false;
+    perbaruiJalankan();
+    el('[data-slot="a"]').scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  function jalankanAksi(action) {
+  async function jalankanAksi(action) {
     if (!action) return;
-    if (action !== "about.info") {
-      if (!el("#ruang-kerja")) {
-        window.location.href = "index.html";
-        return;
-      }
-      tutupTentang();
-    }
+    if (action !== "about.info") tutupTentang();
     if (AKSI_KHUSUS[action]) {
       AKSI_KHUSUS[action]();
       return;
     }
 
     hentikanPratinjau();
-    const data = siapkanDataOperasi(action);
-    if (!data) {
-      kabar(`Aksi '${action}' belum tersedia.`, "galat");
-      return;
-    }
+    try {
+      const data = await api(`/api/operasi/${encodeURIComponent(action)}/form`);
 
-    state.preset = PRESET_KERNEL_BAKU;
-    aturButuhB(Boolean(data.butuh_b));
-    state.aksiTertunda = null;
-    bangunForm(data);
-
-    const bKosong = Boolean(data.butuh_b) && !(state.info && state.info.b);
-    if (bKosong) {
-      el('[data-slot="b"]').scrollIntoView({ block: "nearest", behavior: "smooth" });
-    } else {
-      el("#panel-parameter").scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
-  }
-
-  function resetSemua() {
-    for (const slot of ["a", "b"]) {
-      if (state.info[slot] && state.info[slot].url) {
+      if (
+        state.info &&
+        state.info.hasil &&
+        state.operasi !== data.action
+      ) {
         try {
-          URL.revokeObjectURL(state.info[slot].url);
+          const tutup = await api("/api/tutup-hasil", { method: "POST" });
+          terapkanState(tutup.state);
         } catch {
-          /* abaikan */
+          /* hasil lama tetap ditampilkan bila gagal ditutup */
         }
       }
-      state.info[slot] = null;
+
+      state.preset = data.preset_kernel || {};
+      aturButuhB(Boolean(data.butuh_b));
+      state.aksiTertunda = null;
+      bangunForm(data);
+
+      const bKosong = Boolean(data.butuh_b) && !(state.info && state.info.b);
+      if (bKosong) {
+        el('[data-slot="b"]').scrollIntoView({ block: "nearest", behavior: "smooth" });
+      } else {
+        el("#panel-parameter").scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    } catch (galat) {
+      if (galat.message === PESAN_CITRA_KOSONG) {
+        state.aksiTertunda = action;
+        tampilkanTertunda(action);
+        return;
+      }
+      kabar(galat.message, "galat");
     }
-    state.info.hasil = null;
-    terapkanState(state.info);
-    kabar("Semua citra dan hasil telah direset.", "sukses");
   }
 
   // --------------------------------------------------------------- pemasangan
@@ -330,7 +283,9 @@
     for (const tombol of els("[data-aksi]")) {
       tombol.addEventListener("click", () => {
         const aksi = tombol.dataset.aksi;
-        if (aksi === "reset") resetSemua();
+        if (aksi === "reset") {
+          aksiSederhana("/api/reset", () => resetParameter());
+        }
       });
     }
 
@@ -372,13 +327,10 @@
       });
     }
 
-    const formParam = el("#form-parameter");
-    if (formParam) {
-      formParam.addEventListener("submit", (peristiwa) => {
-        peristiwa.preventDefault();
-        kirimOperasi();
-      });
-    }
+    el("#form-parameter").addEventListener("submit", (peristiwa) => {
+      peristiwa.preventDefault();
+      kirimOperasi();
+    });
 
     const btnBatal = el("#btn-batal-parameter");
     if (btnBatal) {
@@ -390,21 +342,11 @@
 
     const tombolTerapkan = el("#btn-terapkan");
     if (tombolTerapkan) {
-      tombolTerapkan.addEventListener("click", () => {
-        if (!state.info || !state.info.hasil) {
-          kabar("Belum ada hasil operasi untuk diterapkan.", "galat");
-          return;
-        }
-        kabar("Hasil operasi diterapkan ke Citra A.", "sukses");
-      });
+      tombolTerapkan.addEventListener("click", () => aksiSederhana("/api/terapkan"));
     }
-
-    const btnTutupHasil = el("#btn-tutup-hasil");
-    if (btnTutupHasil) {
-      btnTutupHasil.addEventListener("click", () => {
-        kabar("Area hasil ditutup.", "sukses");
-      });
-    }
+    el("#btn-tutup-hasil").addEventListener("click", () =>
+      aksiSederhana("/api/tutup-hasil")
+    );
 
     const btnSimpanDropdown = el("#btn-simpan-dropdown");
     const menuSimpan = el("#menu-simpan");
@@ -431,29 +373,25 @@
       }
     }
 
-    const formatUnduh = el("#format-unduh");
-    if (formatUnduh) {
-      formatUnduh.addEventListener("change", () => {
-        const nama = el("#nama-unduh").value.trim();
-        if (!nama) return;
-        const akar = namaDasar(nama) || "citra";
-        el("#nama-unduh").value = `${akar}${ekstensiFormat(formatUnduh.value)}`;
-      });
-    }
+    el("#format-unduh").addEventListener("change", () => {
+      const nama = el("#nama-unduh").value.trim();
+      if (!nama) return;
+      const akar = namaDasar(nama) || "citra";
+      el("#nama-unduh").value = `${akar}${ekstensiFormat(el("#format-unduh").value)}`;
+    });
 
-    const formUnduh = el("#form-unduh");
-    if (formUnduh) {
-      formUnduh.addEventListener("submit", (peristiwa) => {
-        peristiwa.preventDefault();
-        const nama = el("#nama-unduh").value.trim();
-        if (!nama) {
-          kabar("Nama berkas tidak boleh kosong.", "galat");
-          el("#nama-unduh").focus();
-          return;
-        }
-        el("#dlg-unduh").close();
-      });
-    }
+    el("#form-unduh").addEventListener("submit", (peristiwa) => {
+      peristiwa.preventDefault();
+      const format = el("#format-unduh").value;
+      const nama = el("#nama-unduh").value.trim();
+      if (!nama) {
+        kabar("Nama berkas tidak boleh kosong.", "galat");
+        el("#nama-unduh").focus();
+        return;
+      }
+      el("#dlg-unduh").close();
+      pemicuUnduh(state.slotUnduh, format, nama);
+    });
 
     for (const tombol of els("[data-tutup]")) {
       tombol.addEventListener("click", () => {
@@ -461,21 +399,20 @@
         if (dialog) dialog.close();
       });
     }
+
+    window.addEventListener("pageshow", (peristiwa) => {
+      if (!peristiwa.persisted) return;
+      api("/api/state")
+        .then((data) => terapkanState(data.state))
+        .catch(() => {
+          /* keadaan lama tetap ditampilkan */
+        });
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     pulihkanBuka();
-
-    const diHalamanTentang = !el("#ruang-kerja") && Boolean(el("#panel-tentang"));
-    if (diHalamanTentang) {
-      const daunTentang = el('[data-action="about.info"]');
-      if (daunTentang) {
-        tandaiAktif(daunTentang, false);
-        bukaJalur(daunTentang);
-      }
-      pasangPeristiwa();
-      return;
-    }
+    const aksiTersimpan = pulihkanAktif();
 
     const dataAwal = el("#data-awal");
     if (dataAwal) {
@@ -486,17 +423,11 @@
       }
     }
 
-    pasangPeristiwa();
-
-    const aksiTersimpan = ambil(KUNCI_SIMPAN.aktif);
+    // Bangun ulang formulir parameter untuk operasi yang tersimpan,
+    // supaya panel parameter tidak kosong setelah halaman dimuat ulang.
     if (aksiTersimpan && aksiTersimpan !== "about.info") {
-      const daun = el(`[data-action="${CSS.escape(aksiTersimpan)}"]`);
-      if (daun) {
-        tandaiAktif(daun, false);
-        bukaJalur(daun);
-        if (DAFTAR_OPERASI[aksiTersimpan]) {
-          jalankanAksi(aksiTersimpan);
-        }
-      }
+      jalankanAksi(aksiTersimpan);
     }
+
+    pasangPeristiwa();
   });

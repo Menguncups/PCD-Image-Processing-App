@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% from "_sidebar.html" import pohon %}
+
+{% block judul %}{{ aplikasi.APP_NAME }} - {{ aplikasi.APP_SUBTITLE }}{% endblock %}
+
+{% block kepala %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/katex/katex.min.css') }}">
+{% endblock %}
+
+{% block isi %}
+<div class="aplikasi" id="aplikasi">
+  <aside class="sisi" id="sisi" aria-label="Menu aplikasi">
+    <div class="merek">
+      <img class="merek-tanda" src="{{ url_for('static', filename='img/logo.png') }}" alt="" width="34" height="34">
+      <div class="merek-teks">
+        <p class="merek-nama">{{ aplikasi.APP_NAME }}</p>
+        <p class="merek-sub">{{ aplikasi.APP_SUBTITLE }}</p>
+      </div>
+      <button class="tombol ikon tutup-sisi hanya-sempit" type="button" id="btn-tutup-sisi"
+              aria-label="Tutup menu" title="Tutup menu">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="pohon" id="pohon" aria-label="Menu operasi">
+      {{ pohon(menu, tautan_luar) }}
+    </nav>
+
+    <div class="sisi-kaki">
+      <span>{{ jumlah_aksi }} operasi</span>
+      <span>v{{ aplikasi.APP_VERSION }}</span>
+    </div>
+
+  </aside>
+
+  <div class="tirai" id="tirai" hidden></div>
+
+  <main class="utama">
+    <header class="topbar">
+      <button class="tombol ikon hanya-sempit" type="button" id="btn-sisi"
+              aria-label="Buka menu" aria-controls="sisi" aria-expanded="false">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round"></path>
+        </svg>
+      </button>
+
+      <p class="remah" id="remah">Belum ada operasi dipilih</p>
+
+      <div class="alat">
+        <button class="tombol kecil" type="button" id="btn-reset"
+                data-aksi="reset">Reset</button>
+      </div>
+    </header>
+
+    <div class="gulir" id="gulir">
+      <div class="ruang-kerja" id="ruang-kerja">
+        <section class="kartu-citra tanpa-b" aria-label="Citra masukan dan hasil">
+          {% for slot, judul in [("a", "A"), ("b", "B")] %}
+          <article class="kartu kartu-slot" data-slot="{{ slot }}">
+            <header class="kartu-kepala">
+              <h2>Citra {{ judul }}</h2>
+              <span class="lencana" data-peran="meta-{{ slot }}">Belum ada citra</span>
+              <label class="tombol kecil tombol-berkas" data-peran="ganti-{{ slot }}" hidden>
+                Ganti
+                <input type="file" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff"
+                       data-unggah="{{ slot }}" hidden>
+              </label>
+            </header>
+
+            <div class="bingkai" data-peran="bingkai-{{ slot }}">
+              <div class="kosong" data-peran="kosong-{{ slot }}">
+                <svg class="kosong-ikon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="2" fill="none"
+                        stroke="currentColor" stroke-width="1.5"></rect>
+                  <circle cx="9" cy="10" r="1.6" fill="none" stroke="currentColor"
+                          stroke-width="1.4"></circle>
+                  <path d="M4 18l5-5 3.5 3.5L16 13l4 4" fill="none" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <p class="kosong-judul">Tarik citra ke sini</p>
+                <p class="kosong-ket">atau pilih berkas dari komputer</p>
+                <label class="tombol">
+                  Open...
+                  <input type="file" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff"
+                         data-unggah="{{ slot }}" hidden>
+                </label>
+              </div>
+              <div class="gambar" data-peran="gambar-{{ slot }}" hidden>
+                <img alt="Citra {{ judul }}" draggable="false">
+              </div>
+            </div>
+
+            <footer class="kartu-kaki" data-peran="kaki-{{ slot }}">Belum ada citra</footer>
+          </article>
+          {% endfor %}
+
+          <article class="kartu kartu-slot kartu-hasil" id="panel-hasil"
+                   aria-label="Hasil operasi">
+            <header class="kartu-kepala">
+              <h2>Hasil</h2>
+              <span class="lencana" id="lencana-operasi">Belum ada hasil</span>
+              <div class="hasil-aksi-kanan">
+                <div class="dropdown-simpan">
+                  <button class="tombol kecil" type="button" id="btn-simpan-dropdown"
+                          title="Simpan hasil" aria-haspopup="true" aria-expanded="false"
+                          aria-controls="menu-simpan">
+                    Save
+                    <svg class="panah turun" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                      <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </button>
+                  <div class="menu-simpan" id="menu-simpan" hidden>
+                    <button type="button" data-simpan="langsung">Simpan</button>
+                    <button type="button" data-simpan="sebagai">Simpan Sebagai...</button>
+                  </div>
+                </div>
+                <button class="tombol kecil tombol-tutup-hasil" type="button"
+                        id="btn-tutup-hasil" title="Tutup hasil operasi">Tutup</button>
+              </div>
+            </header>
+
+            <div class="bingkai">
+              <div class="kosong" id="kosong-hasil">
+                <svg class="kosong-ikon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="2" fill="none"
+                        stroke="currentColor" stroke-width="1.5"></rect>
+                  <circle cx="9" cy="10" r="1.6" fill="none" stroke="currentColor"
+                          stroke-width="1.4"></circle>
+                  <path d="M4 18l5-5 3.5 3.5L16 13l4 4" fill="none" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <p class="kosong-judul">Hasil operasi</p>
+                <p class="kosong-ket">Jalankan operasi untuk melihat hasilnya</p>
+              </div>
+              <div class="gambar" id="gambar-hasil" hidden>
+                <img id="img-hasil" alt="Hasil operasi" draggable="false">
+              </div>
+            </div>
+
+            <footer class="kartu-kaki kaki-hasil">
+              <p class="info-hasil" id="info-hasil">Belum ada citra</p>
+              {% if aplikasi.TAMPILKAN_TERAPKAN %}
+              <div class="aksi-hasil">
+                <button class="tombol kecil utama" type="button" id="btn-terapkan"
+                        title="Terapkan hasil ke Citra A" disabled>Terapkan</button>
+              </div>
+              {% endif %}
+            </footer>
+          </article>
+        </section>
+
+        <section class="kartu panel-parameter" id="panel-parameter"
+                 aria-label="Parameter operasi">
+          <header class="kartu-kepala panel-kepala-header">
+            <div class="panel-header-kiri">
+              <h2 id="judul-operasi">Parameter</h2>
+              <span class="lencana" id="jalur-operasi">Belum ada operasi</span>
+            </div>
+            <div class="panel-header-kanan">
+              <button class="tombol kecil" type="button" id="btn-batal-parameter">
+                Batal
+              </button>
+              <button class="tombol kecil tombol-jalankan-navy" type="submit" form="form-parameter" id="tombol-jalankan">
+                Jalankan
+              </button>
+            </div>
+          </header>
+
+          <div class="badan-parameter" id="badan-parameter">
+            <p class="ketik" id="ketik-operasi">
+              Pilih operasi dari menu untuk mengatur parameter.
+            </p>
+            <div class="rumus-operasi" id="rumus-operasi" hidden>
+              <p class="rumus-label">Rumus</p>
+              <div class="rumus-isi" id="isi-rumus"></div>
+            </div>
+            <form class="form-parameter" id="form-parameter" novalidate>
+              <div class="grid-parameter" id="grid-parameter"></div>
+              <p class="medan-ketik ket-prasyarat" id="ket-prasyarat" hidden></p>
+            </form>
+          </div>
+        </section>
+
+        <section class="kartu panel-histogram" id="panel-histogram"
+                 aria-label="Histogram Citra A vs Hasil" hidden>
+          <header class="kartu-kepala panel-kepala-header">
+            <div class="panel-header-kiri">
+              <h2>Histogram</h2>
+              <span class="lencana">Citra A vs Hasil</span>
+            </div>
+          </header>
+
+          <div class="badan-histogram">
+            <div class="histogram-dua">
+              <div class="histogram-satu">
+                <h3 class="histogram-judul">Citra A</h3>
+                <canvas id="kanvas-histogram-a" height="260"></canvas>
+              </div>
+              <div class="histogram-satu">
+                <h3 class="histogram-judul">Hasil</h3>
+                <canvas id="kanvas-histogram-b" height="260"></canvas>
+              </div>
+            </div>
+            <div class="legenda-histogram">
+              <span class="keterangan" id="ket-ambang" hidden>
+                <span class="titik titik-ambang"></span>Ambang <span id="nilai-ambang"></span>
+              </span>
+            </div>
+            <p class="ketik" id="ket-histogram">Histogram grayscale: sumbu horizontal adalah nilai terang 0 sampai 255, sumbu vertikal adalah persen piksel.</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="kartu kartu-tentang" id="panel-tentang"
+               aria-label="Tentang aplikasi" hidden>
+        {% include "tentang.html" %}
+      </section>
+    </div>
+  </main>
+</div>
+
+<dialog class="dialog" id="dlg-unduh">
+  <form class="dialog-isi" id="form-unduh" method="dialog">
+    <h2 id="judul-unduh">Unduh citra</h2>
+    <p class="dialog-ket" id="ket-unduh">
+      Pilih nama dan format berkas. Isi ruang kerja tidak berubah oleh unduhan.
+    </p>
+    <label class="medan">
+      <span class="medan-label">Nama berkas</span>
+      <input type="text" id="nama-unduh" maxlength="120" autocomplete="off"
+             spellcheck="false">
+    </label>
+    <label class="medan">
+      <span class="medan-label">Format berkas</span>
+      <select id="format-unduh">
+        <option value="png">PNG</option>
+        <option value="jpg">JPEG</option>
+        <option value="bmp">BMP</option>
+        <option value="tiff">TIFF</option>
+      </select>
+    </label>
+    <div class="dialog-aksi">
+      <button class="tombol" type="button" data-tutup>Batal</button>
+      <button class="tombol utama" type="submit" id="btn-unduh-submit">Unduh</button>
+    </div>
+  </form>
+</dialog>
+
+<script id="data-aplikasi" type="application/json">{{ {
+  "github": aplikasi.GITHUB_URL,
+  "youtube": aplikasi.YOUTUBE_URL,
+  "batas_hasil_piksel": aplikasi.BATAS_HASIL_PIKSEL,
+  "aksi_butuh_b": aksi_butuh_b
+} | tojson }}</script>
+<script id="data-awal" type="application/json">{{ info | tojson }}</script>
+{% endblock %}
+
+{% block skrip %}
+<script src="{{ url_for('static', filename='vendor/katex/katex.min.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/core.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/sidebar.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/parameter.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/actions.js') }}" defer></script>
+{% endblock %}

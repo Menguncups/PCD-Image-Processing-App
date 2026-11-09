@@ -115,6 +115,8 @@
     el("#tombol-jalankan").hidden = false;
     el("#tombol-jalankan").disabled = false;
     el("#tombol-jalankan").textContent = "Jalankan";
+    const panelHist = el("#panel-histogram");
+    if (panelHist) panelHist.hidden = true;
 
     if (bersihkanPilihan) {
       bersihkanAktif();
@@ -445,14 +447,20 @@
     return "";
   }
 
-  function jadwalkanPratinjau() {
+  function jadwalkanPratinjau(jeda = 220) {
     if (!state.operasi) return;
     if (!state.pratinjau) {
+      // Operasi manual (termasuk seluruh Geometrics) baru dijalankan lewat
+      // tombol Jalankan. Perubahan parameter membersihkan pesan lama.
       if (state.pesanValidasi) {
         state.pesanValidasi = "";
         perbaruiJalankan();
       }
       return;
+    }
+    if (state.pratinjauTimer) {
+      clearTimeout(state.pratinjauTimer);
+      state.pratinjauTimer = null;
     }
 
     const pesan = validasiParameter();
@@ -463,9 +471,59 @@
       return;
     }
     perbaruiJalankan();
+    state.pratinjauDirty = true;
+    state.pratinjauTimer = setTimeout(() => {
+      state.pratinjauTimer = null;
+      kirimPratinjau();
+    }, jeda);
   }
 
-  function kirimOperasi() {
+  async function kirimPratinjau() {
+    if (!state.operasi || !state.pratinjau) return;
+    if (state.pratinjauSibuk || state.sibuk) {
+      state.pratinjauDirty = true;
+      return;
+    }
+
+
+    const pesan = validasiParameter();
+    state.pesanValidasi = pesan;
+    if (pesan) {
+      aturPrasyarat(pesan, "galat");
+      return;
+    }
+
+    const action = state.operasi;
+    const params = kumpulkanParam();
+    const versi = ++state.pratinjauVersi;
+    state.pratinjauSibuk = true;
+    state.pratinjauDirty = false;
+
+    try {
+      const data = await api(`/api/operasi/${encodeURIComponent(action)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ params }),
+      });
+      if (versi !== state.pratinjauVersi || action !== state.operasi) return;
+      terapkanState(data.state);
+    } catch (galat) {
+      if (versi === state.pratinjauVersi && action === state.operasi) {
+        kabar(galat.message, "galat");
+      }
+    } finally {
+      state.pratinjauSibuk = false;
+      if (
+        state.pratinjauDirty &&
+        action === state.operasi &&
+        versi === state.pratinjauVersi
+      ) {
+        jadwalkanPratinjau(120);
+      }
+    }
+  }
+
+  async function kirimOperasi() {
     if (state.sibuk) return;
     if (!state.operasi) {
       kabar(PESAN_CITRA_KOSONG, "galat");
@@ -480,15 +538,32 @@
       return;
     }
 
-    const { siap, pesan: pesanPrasyarat } = statusPrasyarat();
-    if (!siap) {
-      aturPrasyarat(pesanPrasyarat, "info");
-      kabar(pesanPrasyarat, "galat");
-      return;
-    }
+    const action = state.operasi;
+    const tombolBatal = el("#btn-batal-parameter");
+    state.sibuk = true;
+    perbaruiJalankan();
+    if (tombolBatal) tombolBatal.disabled = true;
 
-    const op = DAFTAR_OPERASI[state.operasi];
-    const judul = op ? op.judul : state.operasi;
-    kabar(`Operasi '${judul}' selesai. Hasil ditampilkan pada kartu Hasil.`, "sukses");
-    el("#panel-parameter").scrollIntoView({ block: "nearest", behavior: "smooth" });
+    try {
+      const data = await api(`/api/operasi/${encodeURIComponent(action)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ params: kumpulkanParam() }),
+      });
+      if (action !== state.operasi) return;
+      terapkanState(data.state);
+      kabar(data.pesan, "sukses");
+      const panelHist = el("#panel-histogram");
+      if (panelHist && !panelHist.hidden) {
+        panelHist.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      } else {
+        el("#panel-parameter").scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    } catch (galat) {
+      kabar(galat.message, "galat");
+    } finally {
+      state.sibuk = false;
+      if (tombolBatal) tombolBatal.disabled = false;
+      perbaruiJalankan();
+    }
   }

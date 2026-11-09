@@ -105,39 +105,29 @@
 
   function pulihkanAktif() {
     const aksi = ambil(KUNCI_SIMPAN.aktif);
-    if (!aksi) return;
+    if (!aksi) return null;
     const daun = el(`[data-action="${CSS.escape(aksi)}"]`);
-    if (!daun) return;
+    if (!daun) return null;
     tandaiAktif(daun, false);
     bukaJalur(daun);
+    return aksi;
   }
 
   // ----------------------------------------------------------------- tentang
 
   function tampilkanTentang() {
     hentikanPratinjau();
-    const ruangKerja = el("#ruang-kerja");
-    const panelTentang = el("#panel-tentang");
-    if (!panelTentang) {
-      window.location.href = "tentang.html";
-      return;
-    }
-    if (ruangKerja) ruangKerja.hidden = true;
-    panelTentang.hidden = false;
+    el("#ruang-kerja").hidden = true;
+    el("#panel-tentang").hidden = false;
     el("#aplikasi").classList.add("tentang-buka");
     el("#gulir").scrollTop = 0;
   }
 
   function tutupTentang() {
-    const ruangKerja = el("#ruang-kerja");
     const panel = el("#panel-tentang");
-    if (!ruangKerja) {
-      window.location.href = "index.html";
-      return;
-    }
     if (!panel || panel.hidden) return;
     panel.hidden = true;
-    ruangKerja.hidden = false;
+    el("#ruang-kerja").hidden = false;
     el("#aplikasi").classList.remove("tentang-buka");
   }
 

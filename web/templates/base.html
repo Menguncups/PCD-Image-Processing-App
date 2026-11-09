@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block judul %}{{ aplikasi.APP_NAME }}{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block kepala %}{% endblock %}
+</head>
+<body class="{% block kelas %}{% endblock %}">
+  {% block isi %}{% endblock %}
+  <div class="kabar" id="kabar" role="status" aria-live="polite" hidden></div>
+  {% block skrip %}{% endblock %}
+</body>
+</html>

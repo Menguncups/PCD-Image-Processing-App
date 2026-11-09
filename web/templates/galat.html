@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block judul %}Galat {{ kode }} - {{ aplikasi.APP_NAME }}{% endblock %}
+{% block kelas %}halaman-galat{% endblock %}
+
+{% block isi %}
+<main class="pusat">
+  <div class="kartu kartu-galat">
+    <p class="kode-galat">{{ kode }}</p>
+    <h1>Halaman tidak dapat ditampilkan</h1>
+    <p class="tentang-teks">{{ pesan }}</p>
+    <a class="tombol utama" href="{{ url_for('halaman.beranda') }}">Kembali ke aplikasi</a>
+  </div>
+</main>
+{% endblock %}

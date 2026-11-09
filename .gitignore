@@ -1,0 +1,20 @@
+# Berkas yang tidak perlu disimpan
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Keadaan sesi pengguna dan kunci rahasia lokal
+instance/sesi/
+instance/kunci_rahasia
+
+# Berkas pengujian
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Berkas build dan skrip bantu sekali pakai
+lampiran.zip
+fix_reset.py
+

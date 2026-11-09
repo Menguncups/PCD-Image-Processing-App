@@ -1,0 +1,48 @@
+<div class="tentang-kepala">
+  <img class="merek-tanda besar" src="{{ url_for('static', filename='img/logo.png') }}" alt="" width="56" height="56">
+  <div>
+    <h1>{{ aplikasi.APP_NAME }}</h1>
+    <p class="tentang-sub">{{ aplikasi.APP_SUBTITLE }}</p>
+  </div>
+</div>
+
+<p class="tentang-deskripsi">{{ aplikasi.APP_DESKRIPSI }}</p>
+
+<section>
+  <h2>Tim pengembang</h2>
+  <ul class="daftar-tim">
+    {% for anggota in aplikasi.TEAM_MEMBERS %}
+      <li>{{ anggota }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>Cara memakai</h2>
+  <ol class="daftar-langkah">
+    <li>Muat Citra A sebagai citra utama. Operasi juga boleh dipilih lebih dulu; setelah Citra A dimuat, form operasi yang tertunda otomatis terbuka.</li>
+    <li>Kartu parameter selalu tampil di bawah kartu citra. Sebelum operasi dipilih, kartu berisi petunjuk dan tombol Jalankan nonaktif. Di desktop, sidebar selalu terbuka; di layar sempit, sidebar menjadi laci yang ditutup lewat tombol X.</li>
+    <li>Pilih operasi pada menu sidebar. Bila operasi membutuhkan dua citra, kartu Citra B muncul meski belum diisi, bahkan sebelum Citra A dimuat; form parameter tetap terbuka dan tampilan menggulir ke kartu B. Muat Citra B dengan ukuran yang sama.</li>
+    <li>Pada Add, Subtract, Multiply, dan Divide, pilih Jenis operan. Citra + Citra memakai Citra B, sedangkan Citra + Skalar hanya memakai Citra A dan satu nilai angka tanpa memeriksa Citra B. Hasil aritmetika selalu di-clip ke rentang 0-255.</li>
+    <li>Isi parameter. Rumus operasi tampil di panel parameter dan dirender dengan KaTeX. Operasi ringan non-Geometric langsung memperbarui pratinjau saat penggeser digeser. Operasi berat dan seluruh operasi Geometric memakai tombol Jalankan tanpa pratinjau otomatis. Panel parameter tetap terbuka setelah hasil muncul.</li>
+    <li>Periksa hasil pada kartu Hasil. Label menunjukkan dimensi, jumlah kanal, dan skala hasil terhadap Citra A. Klik Tutup di kanan atas kepala kartu untuk membuang hasil. Kartu Hasil tidak menampilkan tombol Bandingkan atau Unduh.</li>
+    {% if aplikasi.TAMPILKAN_TERAPKAN %}
+    <li>Klik Terapkan untuk memakai hasil pada Citra A, atau Tutup untuk membatalkannya. Save dan Save As pada menu File tetap menyimpan Citra A.</li>
+    {% else %}
+    <li>Tombol Terapkan sedang disembunyikan pada konfigurasi ini. Save dan Save As pada menu File tetap menyimpan Citra A, bukan hasil operasi.</li>
+    {% endif %}
+    <li>Reset mengembalikan Citra A ke citra awal. Undo tersedia untuk membatalkan penerapan terakhir bila fitur Terapkan diaktifkan.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Teknologi</h2>
+  <p class="tentang-teks">
+    Flask untuk server web, NumPy dan OpenCV untuk pengolahan citra,
+    SciPy untuk operasi morfologi dan pengisian rongga, KaTeX 0.19.1
+    yang disimpan lokal untuk rumus, serta HTML, CSS, dan JavaScript tanpa
+    kerangka kerja tambahan untuk antarmuka.
+  </p>
+</section>
+
+<footer class="tentang-kaki">{{ aplikasi.COPYRIGHT }}</footer>
