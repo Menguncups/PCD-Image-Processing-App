@@ -222,16 +222,16 @@
         infoHasil.hidden = false;
       }
       if (tombolTutup) {
-        tombolTutup.disabled = false;
-        tombolTutup.hidden = false;
+        tombolTutup.disabled = true;
+        tombolTutup.hidden = true;
       }
       const btnSimpan = el("#btn-simpan-dropdown");
       if (btnSimpan) {
-        btnSimpan.disabled = false;
-        btnSimpan.hidden = false;
+        btnSimpan.disabled = true;
+        btnSimpan.hidden = true;
       }
       aturMenuSimpan(false);
-      aturTombol("#btn-terapkan", false);
+      aturTombol("#btn-terapkan", true);
       return;
     }
 
@@ -289,11 +289,9 @@
 
     const { siap, pesan } = statusPrasyarat();
     const pratinjau = Boolean(state.operasi && state.pratinjau);
-    tombol.hidden = false;
-    tombol.disabled = false;
+    tombol.hidden = pratinjau;
+    tombol.disabled = !state.operasi || !siap || state.sibuk;
     tombol.textContent = state.sibuk ? "Menjalankan..." : "Jalankan";
-    const btnBatal = el("#btn-batal-parameter");
-    if (btnBatal) btnBatal.disabled = false;
 
     if (state.pesanValidasi) {
       aturPrasyarat(state.pesanValidasi, "galat");
@@ -321,6 +319,7 @@
 
   function mungkinPratinjauAwal() {
     if (!state.operasi || !state.pratinjau || state.pratinjauAwal) return;
+    if (!statusPrasyarat().siap) return;
     state.pratinjauAwal = true;
     jadwalkanPratinjau(0);
   }
@@ -329,7 +328,7 @@
     const panel = el("#panel-histogram");
     const kanvasA = el("#kanvas-histogram-a");
     const kanvasB = el("#kanvas-histogram-b");
-    const hist = (info.hasil && info.hasil.histogram) || info.histogram_statis;
+    const hist = info.hasil && info.hasil.histogram;
     if (!panel || !kanvasA || !kanvasB || !hist || !hist.sebelum || !hist.sesudah) {
       if (panel) panel.hidden = true;
       return;
@@ -453,7 +452,7 @@
     aturHasil(info);
     gambarHistogram(info);
     aturButuhB(state.butuhB);
-    el("#btn-reset").disabled = false;
+    el("#btn-reset").disabled = !(info.a || info.b || info.hasil);
     perbaruiJalankan();
     mungkinPratinjauAwal();
   }

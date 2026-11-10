@@ -52,7 +52,7 @@
 
       <div class="alat">
         <button class="tombol kecil" type="button" id="btn-reset"
-                data-aksi="reset">Reset</button>
+                data-aksi="reset" disabled>Reset</button>
       </div>
     </header>
 
@@ -107,7 +107,7 @@
                 <div class="dropdown-simpan">
                   <button class="tombol kecil" type="button" id="btn-simpan-dropdown"
                           title="Simpan hasil" aria-haspopup="true" aria-expanded="false"
-                          aria-controls="menu-simpan">
+                          aria-controls="menu-simpan" hidden disabled>
                     Save
                     <svg class="panah turun" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
                       <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -119,7 +119,8 @@
                   </div>
                 </div>
                 <button class="tombol kecil tombol-tutup-hasil" type="button"
-                        id="btn-tutup-hasil" title="Tutup hasil operasi">Tutup</button>
+                        id="btn-tutup-hasil" title="Tutup hasil operasi"
+                        hidden disabled>Tutup</button>
               </div>
             </header>
 
@@ -161,10 +162,10 @@
               <span class="lencana" id="jalur-operasi">Belum ada operasi</span>
             </div>
             <div class="panel-header-kanan">
-              <button class="tombol kecil" type="button" id="btn-batal-parameter">
+              <button class="tombol kecil" type="button" id="btn-batal-parameter" disabled>
                 Batal
               </button>
-              <button class="tombol kecil tombol-jalankan-navy" type="submit" form="form-parameter" id="tombol-jalankan">
+              <button class="tombol kecil tombol-jalankan-navy" type="submit" form="form-parameter" id="tombol-jalankan" disabled>
                 Jalankan
               </button>
             </div>

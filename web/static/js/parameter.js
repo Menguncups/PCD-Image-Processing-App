@@ -111,12 +111,9 @@
       "Pilih operasi dari menu untuk mengatur parameter.";
     tampilkanRumus("");
     el("#grid-parameter").innerHTML = "";
-    el("#btn-batal-parameter").disabled = false;
+    el("#btn-batal-parameter").disabled = true;
     el("#tombol-jalankan").hidden = false;
-    el("#tombol-jalankan").disabled = false;
     el("#tombol-jalankan").textContent = "Jalankan";
-    const panelHist = el("#panel-histogram");
-    if (panelHist) panelHist.hidden = true;
 
     if (bersihkanPilihan) {
       bersihkanAktif();
@@ -484,7 +481,11 @@
       state.pratinjauDirty = true;
       return;
     }
-
+    if (!statusPrasyarat().siap) {
+      state.pratinjauDirty = false;
+      perbaruiJalankan();
+      return;
+    }
 
     const pesan = validasiParameter();
     state.pesanValidasi = pesan;
@@ -524,9 +525,9 @@
   }
 
   async function kirimOperasi() {
-    if (state.sibuk) return;
-    if (!state.operasi) {
-      kabar(PESAN_CITRA_KOSONG, "galat");
+    if (!state.operasi || state.sibuk) return;
+    if (state.pratinjau) {
+      jadwalkanPratinjau(0);
       return;
     }
 
@@ -563,7 +564,7 @@
       kabar(galat.message, "galat");
     } finally {
       state.sibuk = false;
-      if (tombolBatal) tombolBatal.disabled = false;
+      if (tombolBatal) tombolBatal.disabled = !state.operasi;
       perbaruiJalankan();
     }
   }

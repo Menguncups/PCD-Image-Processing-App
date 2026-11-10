@@ -1,4 +1,9 @@
-"""Rute JSON dan berkas untuk tampilan statis berbasis Flask & Jinja2."""
+"""Rute JSON dan berkas.
+
+Seluruh kegagalan yang berasal dari aturan aplikasi dikirim sebagai JSON
+`{"ok": false, "pesan": "..."}` dengan status 400, sehingga peramban cukup
+menampilkan pesan yang sama seperti versi desktop.
+"""
 
 from __future__ import annotations
 
@@ -9,13 +14,15 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request, send_file
 
 from pcd import config, menu
-from pcd.core import registry
+from pcd.core import ops_filter
+from pcd.utils import kodek
 from pcd.utils.errors import GalatAplikasi
 
 from . import ruang_kerja
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
+# Slot yang boleh dibaca peramban sebagai gambar
 SLOT_GAMBAR = ("a", "b", "sebelum", "hasil")
 
 
@@ -64,8 +71,8 @@ def _param_ke_json(param) -> dict:
 def _preset_kernel() -> dict:
     """Menyusun daftar preset kernel beserta matriks siap tampil."""
     return {
-        nama: {"matriks": registry.preset_ke_matrix(nama), "ketik": keterangan}
-        for nama, (_matriks, keterangan) in registry.KERNEL_PRESET.items()
+        nama: {"matriks": ops_filter.preset_ke_matrix(nama), "ketik": keterangan}
+        for nama, (_matriks, keterangan) in ops_filter.KERNEL_PRESET.items()
     }
 
 
@@ -95,7 +102,7 @@ def info():
 
 @api.get("/menu")
 def daftar_menu():
-    """Pohon menu lengkap."""
+    """Pohon menu lengkap, dipakai untuk pengujian dan klien lain."""
     return _ok(
         menu=menu.MENU,
         jumlah=menu.jumlah_action(),
@@ -153,13 +160,17 @@ def form_operasi(action: str):
 @api.post("/operasi/<action>")
 @_aman
 def jalankan(action: str):
-    """Menjalankan simulasi statis tanpa memproses citra hasil."""
+    """Menjalankan operasi yang punya mesin pemrosesan, atau mengirim pesan."""
     kiriman = request.get_json(silent=True) or {}
     ruang = ruang_kerja()
     operasi = ruang.siapkan(action, periksa_b=False)
     parameter = ruang.baca_parameter(operasi, kiriman.get("params") or {})
     keadaan = ruang.jalankan(action, parameter)
-    pesan = keadaan.pop("pesan_terakhir", f"Operasi '{operasi.judul}' selesai. Hasil ditampilkan pada kartu Hasil.")
+    pesan = keadaan.pop("pesan_terakhir", None)
+    if not pesan:
+        pesan = (keadaan.get("hasil") or {}).get("pesan")
+    if not pesan:
+        pesan = f"Operasi '{operasi.judul}' selesai."
     return _ok(state=keadaan, pesan=pesan)
 
 
@@ -200,7 +211,7 @@ def tutup_hasil():
 @api.get("/citra/<slot>.png")
 @_aman
 def citra(slot: str):
-    """Mengirim citra slot tanpa cache peramban."""
+    """Mengirim citra slot sebagai PNG tanpa cache peramban."""
     if slot not in SLOT_GAMBAR:
         return _galat("Slot citra tidak dikenal.", 404)
 
@@ -219,7 +230,7 @@ def citra(slot: str):
 @api.get("/unduh")
 @_aman
 def unduh():
-    """Mengirim citra sebagai lampiran unduhan bila tersedia."""
+    """Mengirim citra sebagai lampiran unduhan sesuai format yang dipilih."""
     slot = request.args.get("slot", "a")
     format_unduh = request.args.get("format", "png").lower()
     nama = request.args.get("nama")
@@ -230,11 +241,12 @@ def unduh():
         return _galat("Format unduhan tidak didukung.")
 
     ruang = ruang_kerja()
-    data = ruang.baca_bytes(slot)
-    if data is None:
+    isi = ruang.baca(slot)
+    if isi is None:
         return _galat("Belum ada citra untuk diunduh.")
 
     mimetype, ekstensi, _label = config.FORMAT_UNDUH[format_unduh]
+    data = kodek.ke_bytes(isi, format_unduh)
     return send_file(
         BytesIO(data),
         mimetype=mimetype,

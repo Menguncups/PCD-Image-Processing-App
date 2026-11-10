@@ -425,7 +425,7 @@
 
     // Bangun ulang formulir parameter untuk operasi yang tersimpan,
     // supaya panel parameter tidak kosong setelah halaman dimuat ulang.
-    if (aksiTersimpan && aksiTersimpan !== "about.info") {
+    if (aksiTersimpan && state.info && state.info.a && aksiTersimpan !== "about.info") {
       jalankanAksi(aksiTersimpan);
     }
 
