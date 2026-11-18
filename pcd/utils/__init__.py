@@ -2,4 +2,4 @@
 
 from __future__ import annotations
 
-__all__ = ["errors", "images", "kodek"]
+__all__ = ["display", "errors", "images"]

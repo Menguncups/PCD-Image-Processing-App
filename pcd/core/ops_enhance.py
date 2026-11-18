@@ -47,7 +47,7 @@ def kecerahan(citra: TipeCitra, nilai: int = 50) -> TipeCitra:
 
 
 def kontras(citra: TipeCitra, nilai_min: int = 0, nilai_max: int = 255) -> TipeCitra:
-    """Meregangkan kontras citra pada rentang intensitas baru.
+    """Meregangkan kontras citra pada rentang intensitas baru secara per kanal.
 
     Parameter:
         citra: larik citra BGR uint8.
@@ -55,21 +55,27 @@ def kontras(citra: TipeCitra, nilai_min: int = 0, nilai_max: int = 255) -> TipeC
         nilai_max: batas atas intensitas baru.
 
     Mengembalikan:
-        Larik citra uint8 hasil peregangan kontras.
+        Larik citra BGR uint8 hasil peregangan kontras.
     """
-    abu = cv2.cvtColor(citra, cv2.COLOR_BGR2GRAY) if citra.ndim == 3 else citra
+    if citra.ndim == 2:
+        return _kontras_single(citra, nilai_min, nilai_max)
+
+    # Proses per kanal B, G, R
+    b, g, r = cv2.split(citra)
+    return cv2.merge([
+        _kontras_single(b, nilai_min, nilai_max),
+        _kontras_single(g, nilai_min, nilai_max),
+        _kontras_single(r, nilai_min, nilai_max)
+    ])
+
+
+def _kontras_single(abu: np.ndarray, nilai_min: int, nilai_max: int) -> np.ndarray:
     i_min, i_max = float(abu.min()), float(abu.max())
     if i_max - i_min == 0:
-        # Citra seragam tidak bisa diregangkan, dikembalikan apa adanya
-        return citra.copy()
-
+        return abu.copy()
     l_min, l_max = float(nilai_min), float(nilai_max)
     regangan = ((abu.astype(np.float64) - i_min) / (i_max - i_min) * (l_max - l_min) + l_min)
-    hasil = np.clip(regangan, 0, 255).astype(np.uint8)
-
-    if citra.ndim == 3:
-        return cv2.cvtColor(hasil, cv2.COLOR_GRAY2BGR)
-    return hasil
+    return np.clip(regangan, 0, 255).astype(np.uint8)
 
 
 def histogram_ekualisasi(citra: TipeCitra) -> TipeCitra:

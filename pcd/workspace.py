@@ -21,6 +21,7 @@ import numpy as np
 
 from . import config
 from .core import registry
+from .core.ops_segment import _otsu_ambang, hitung_komponen
 from .utils import images, kodek
 from .utils.errors import (
     GalatAplikasi,
@@ -45,41 +46,17 @@ _AKHIRAN_UNDUH = {
     ".tif": {".tif", ".tiff"},
 }
 
-# Operasi yang histogramnya bermakna untuk ditampilkan. Di luar daftar ini
-# histogram tidak dihitung dan panel histogram disembunyikan.
+# Operasi yang histogramnya bermakna untuk ditampilkan. Hanya mencakup
+# operasi manipulasi intensitas titik (point processing) di mana pergeseran
+# atau pembalikan distribusi intensitas piksel dapat diinterpretasikan langsung.
 _AKSI_HISTOGRAM = {
     "enh.brightness",
     "enh.contrast",
     "enh.hist_equalization",
-    "enh.lowpass",
-    "enh.median",
-    "enh.highpass",
-    "enh.highboost",
     "basic.negative",
     "basic.boolean_not",
     "basic.thresholding",
-    "basic.convolution",
-    "noise.gaussian",
-    "noise.rayleigh",
-    "noise.erlang",
-    "noise.exponential",
-    "noise.uniform",
-    "noise.impulse",
-    "seg.otsu",
-    "seg.adaptive_mean",
-    "seg.adaptive_gaussian",
-    "seg.multi_otsu",
-    "seg.highlight",
-    "color.binary",
-    "color.grayscale",
 }
-
-# Menu yang benar-benar memproses citra. Basic Ops memakai awalan basic.,
-# geom., dan color. Menu lain masih tampilan antarmuka saja.
-_AKSI_AKTIF = ("basic.", "geom.", "color.")
-
-# Pesan untuk menu yang belum punya mesin pemrosesan.
-PESAN_UI_SAJA = "Menu ini masih tampilan antarmuka saja."
 
 
 def _nama_aman(nama: str) -> str:
@@ -287,7 +264,7 @@ class RuangKerja:
         operasi = registry.ambil(action)
         if operasi is None:
             raise GalatOperasi(f"Aksi '{action}' belum tersedia.")
-        if action.startswith(_AKSI_AKTIF) and not self.ada("a"):
+        if not self.ada("a"):
             raise GalatCitra(PESAN_CITRA_KOSONG)
         if periksa_b and operasi.perlu_b(params):
             if not self.ada("b"):
@@ -407,16 +384,6 @@ class RuangKerja:
             Keadaan ruang kerja setelah operasi selesai.
         """
         with self.kunci:
-            if not action.startswith(_AKSI_AKTIF):
-                operasi = registry.ambil(action)
-                if operasi is None:
-                    raise GalatOperasi(f"Aksi '{action}' belum tersedia.")
-                self._bersihkan_hasil()
-                self._tulis_meta()
-                keadaan = self.info()
-                keadaan["pesan_terakhir"] = f"{PESAN_UI_SAJA} Pemrosesan citra baru tersedia di Basic Ops."
-                return keadaan
-
             operasi = self.siapkan(action, params=params)
             a = self.baca("a")
             b = self.baca("b") if operasi.perlu_b(params) else None
@@ -446,6 +413,13 @@ class RuangKerja:
                     ambang = None
                     if operasi.action == "basic.thresholding":
                         ambang = int(params.get("nilai", 127))
+                    elif operasi.action == "seg.otsu":
+                        ambang = int(
+                            _otsu_ambang(
+                                np.array(hist_sebelum),
+                                float(sum(hist_sebelum)),
+                            )
+                        )
                     histogram = {
                         "sebelum": hist_sebelum,
                         "sesudah": _histogram_abu(hasil),
@@ -471,12 +445,25 @@ class RuangKerja:
 
     @staticmethod
     def _pesan_hasil(operasi: registry.Operasi, hasil: np.ndarray) -> str:
-        """Menyusun pesan status setelah operasi selesai."""
+        """Menyusun pesan status setelah operasi selesai.
+
+        Operasi segmentasi juga melaporkan banyaknya wilayah terhubung.
+        """
         if config.TAMPILKAN_TERAPKAN:
             petunjuk = "Klik Terapkan untuk memakai hasilnya."
         else:
             petunjuk = "Hasil ditampilkan pada kartu Hasil."
-        return f"Operasi '{operasi.judul}' selesai. {petunjuk}"
+        pesan = f"Operasi '{operasi.judul}' selesai. {petunjuk}"
+        if operasi.action.startswith("seg."):
+            try:
+                wilayah = hitung_komponen(hasil)
+            except GalatAplikasi:
+                return pesan
+            pesan = (
+                f"Operasi '{operasi.judul}' selesai. "
+                f"Terbagi menjadi {wilayah} wilayah. {petunjuk}"
+            )
+        return pesan
 
     def terapkan(self) -> tuple[dict, str]:
         """Menyalin hasil pratinjau ke Citra A dan menyimpannya ke riwayat."""

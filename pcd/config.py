@@ -38,6 +38,7 @@ TAMPILKAN_TERAPKAN = False
 TAMPILKAN_HISTOGRAM = True
 
 # Placeholder, akan diganti sendiri oleh pengembang
+TEAM_NAME = "Mengasah"
 TEAM_MEMBERS = [
     "Afdhal Fidi Ansori",
     "Muhammad Rifqi Fathurrahman",
@@ -45,6 +46,7 @@ TEAM_MEMBERS = [
 ]
 GITHUB_URL = "https://github.com/Menguncups/PCD-Image-Processing-App"
 YOUTUBE_URL = "https://www.youtube.com/@username"
+TUTORIAL_URL = "https://github.com/username/aplikasi-pcd#tutorial"
 
 COPYRIGHT = "© 2026 Mengasah. Hak cipta dilindungi."
 

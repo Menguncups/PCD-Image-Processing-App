@@ -11,6 +11,7 @@ from __future__ import annotations
 import random
 
 import numpy as np
+import cv2
 
 # Tipe larik citra
 TipeCitra = np.ndarray
@@ -87,6 +88,8 @@ def pad_sama_ukuran(image: TipeCitra, kernel: np.ndarray) -> TipeCitra:
 def konvolusi_sama_ukuran(image: TipeCitra, kernel: np.ndarray) -> np.ndarray:
     """Menjalankan konvolusi manual dengan hasil berukuran sama dengan citra.
 
+    Menggunakan cv2.filter2D untuk performa instan dibandingkan loop Python.
+
     Parameter:
         image: larik citra dua dimensi.
         kernel: matriks kernel.
@@ -94,8 +97,7 @@ def konvolusi_sama_ukuran(image: TipeCitra, kernel: np.ndarray) -> np.ndarray:
     Mengembalikan:
         Larik hasil konvolusi berupa float.
     """
-    kernel = np.asarray(kernel, dtype=np.float64)
-    return convolution2d(pad_sama_ukuran(image, kernel), kernel)
+    return cv2.filter2D(image.astype(np.float64), -1, kernel, borderType=cv2.BORDER_REPLICATE)
 
 
 def konvolusi_warna(citra: TipeCitra, kernel: np.ndarray) -> TipeCitra:

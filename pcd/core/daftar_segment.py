@@ -1,10 +1,12 @@
-"""Sub-registri Segmentation (definisi statis)."""
+"""Sub-registri Segmentation."""
 
 from __future__ import annotations
 
+from . import ops_segment
 from .registry import JENIS_CENTANG, Operasi, Param, _daftar, _p
 
 # ---------------------------------------------------------------- Segmentation
+# Parameter isi rongga dipakai bersama oleh seluruh operasi segmentasi
 _PARAM_ISI_RONGGA = Param(
     kunci="isi_rongga",
     label="Isi rongga di tengah objek",
@@ -17,7 +19,7 @@ _daftar(
     Operasi(
         "seg.otsu",
         "Segmentation: Global Threshold (Otsu)",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.otsu(a, p.get("isi_rongga", True)),
         params=[_PARAM_ISI_RONGGA],
         ketik="Segmentasi dengan ambang global Otsu.",
     )
@@ -27,7 +29,9 @@ _daftar(
     Operasi(
         "seg.adaptive_mean",
         "Segmentation: Adaptive Threshold (Mean)",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.adaptive_mean(
+            a, p.get("konstanta", 5), p.get("ukuran", 11), p.get("isi_rongga", True)
+        ),
         params=[
             _p("konstanta", "Nilai C", 5, -20, 20),
             _p("ukuran", "Ukuran jendela", 11, 3, 99),
@@ -41,7 +45,9 @@ _daftar(
     Operasi(
         "seg.adaptive_gaussian",
         "Segmentation: Adaptive Threshold (Gaussian)",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.adaptive_gaussian(
+            a, p.get("konstanta", 5), p.get("ukuran", 11), p.get("isi_rongga", True)
+        ),
         params=[
             _p("konstanta", "Nilai C", 5, -20, 20),
             _p("ukuran", "Ukuran jendela", 11, 3, 99),
@@ -55,7 +61,9 @@ _daftar(
     Operasi(
         "seg.multi_otsu",
         "Segmentation: Multi-Level Otsu (3 kelas)",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.multi_level_otsu(
+            a, p.get("kelas", 3), p.get("isi_rongga", True)
+        ),
         params=[_PARAM_ISI_RONGGA],
         ketik="Segmentasi dengan ambang Otsu bertingkat tiga kelas.",
     )
@@ -65,7 +73,9 @@ _daftar(
     Operasi(
         "seg.highlight",
         "Segmentation: Highlight Segmentation",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.highlight(
+            a, p.get("ambang", 180), p.get("isi_rongga", True)
+        ),
         params=[_p("ambang", "Ambang brightness", 180, 0, 255), _PARAM_ISI_RONGGA],
         ketik="Segmentasi bagian citra yang terang.",
     )
@@ -75,7 +85,9 @@ _daftar(
     Operasi(
         "seg.contour",
         "Segmentation: Kontur (Find & Draw)",
-        lambda a, b, p: a,
+        lambda a, b, p: ops_segment.kontur(
+            a, p.get("ketebalan", 2), p.get("isi_rongga", True)
+        ),
         params=[
             _p("ketebalan", "Ketebalan garis", 2, 1, 10),
             _PARAM_ISI_RONGGA,

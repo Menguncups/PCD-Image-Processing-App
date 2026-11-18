@@ -343,10 +343,10 @@
       nilaiAmbang.textContent = ambang === null ? "" : String(ambang);
     }
 
-    // Gabungkan 256 nilai menjadi 8 bin, lalu ubah menjadi persen piksel.
+    // Gabungkan 256 nilai menjadi 16 bin, lalu ubah menjadi persen piksel.
     const keBin = (data) => {
-      const bin = new Array(8).fill(0);
-      for (let i = 0; i < 256; i += 1) bin[Math.floor(i / 32)] += data[i] || 0;
+      const bin = new Array(16).fill(0);
+      for (let i = 0; i < 256; i += 1) bin[Math.floor(i / 16)] += data[i] || 0;
       const total = bin.reduce((s, v) => s + v, 0) || 1;
       return bin.map((v) => (v / total) * 100);
     };
@@ -404,19 +404,20 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
       ctx.font = "9px sans-serif";
-      for (let b = 0; b < 8; b += 1) {
-        const x = padKiri + ((b + 0.5) / 8) * lebarPlot;
+      // Label ditampilkan tiap 2 bin supaya tidak bertumpuk.
+      for (let b = 0; b < 16; b += 2) {
+        const x = padKiri + ((b + 0.5) / 16) * lebarPlot;
         ctx.fillStyle = "#7a8394";
-        ctx.fillText(`${b * 32}-${b * 32 + 31}`, x, padAtas + tinggiPlot + 5);
+        ctx.fillText(`${b * 16}-${b * 16 + 15}`, x, padAtas + tinggiPlot + 5);
       }
       ctx.font = "11px sans-serif";
 
-      const lebarBin = lebarPlot / 8;
-      const lebarBatang = Math.max(2, lebarBin * 0.62);
+      const lebarBin = lebarPlot / 16;
+      const lebarBatang = Math.max(3, lebarBin * 0.7);
       ctx.fillStyle = warna;
-      for (let b = 0; b < 8; b += 1) {
+      for (let b = 0; b < 16; b += 1) {
         const tinggi = Math.min(100, bin[b]) * (tinggiPlot / 100);
-        ctx.fillRect(padKiri + b * lebarBin + lebarBin * 0.19, padAtas + tinggiPlot - tinggi, lebarBatang, tinggi);
+        ctx.fillRect(padKiri + b * lebarBin + lebarBin * 0.15, padAtas + tinggiPlot - tinggi, lebarBatang, tinggi);
       }
 
       const xMean = padKiri + (mean / 255) * lebarPlot;

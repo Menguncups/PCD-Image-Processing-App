@@ -49,19 +49,18 @@ def _terapkan_isi_rongga(mask: np.ndarray, aktif: bool) -> np.ndarray:
     return isi_rongga(mask)
 
 
+def _terapkan_segmentasi(citra: TipeCitra, mask: np.ndarray) -> TipeCitra:
+    """Menerapkan mask biner ke citra asli sehingga objek tetap berwarna."""
+    if citra.ndim == 2:
+        return cv2.bitwise_and(citra, mask)
+    return cv2.bitwise_and(citra, cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR))
+
+
 def otsu(citra: TipeCitra, isi_rongga_aktif: bool = True) -> TipeCitra:
-    """Segmentasi dengan ambang global Otsu.
-
-    Parameter:
-        citra: larik citra BGR uint8.
-        isi_rongga_aktif: bila True, rongga di tengah objek diisi.
-
-    Mengembalikan:
-        Larik citra biner uint8.
-    """
     abu = _ke_abu(citra)
     _, hasil = cv2.threshold(abu, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    return _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    mask = _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    return _terapkan_segmentasi(citra, mask)
 
 
 def adaptive_mean(
@@ -70,17 +69,6 @@ def adaptive_mean(
     ukuran_jendela: int = 11,
     isi_rongga_aktif: bool = True,
 ) -> TipeCitra:
-    """Segmentasi dengan ambang adaptif berbasis rata-rata lokal.
-
-    Parameter:
-        citra: larik citra BGR uint8.
-        konstanta: nilai C yang dikurangi dari rata-rata lokal.
-        ukuran_jendela: ukuran jendela neighborhood, harus ganjil.
-        isi_rongga_aktif: bila True, rongga di tengah objek diisi.
-
-    Mengembalikan:
-        Larik citra biner uint8.
-    """
     ukuran_jendela = max(3, int(ukuran_jendela))
     if ukuran_jendela % 2 == 0:
         ukuran_jendela += 1
@@ -94,7 +82,8 @@ def adaptive_mean(
         ukuran_jendela,
         int(konstanta),
     )
-    return _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    mask = _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    return _terapkan_segmentasi(citra, mask)
 
 
 def adaptive_gaussian(
@@ -103,17 +92,6 @@ def adaptive_gaussian(
     ukuran_jendela: int = 11,
     isi_rongga_aktif: bool = True,
 ) -> TipeCitra:
-    """Segmentasi dengan ambang adaptif berbasis Gaussian.
-
-    Parameter:
-        citra: larik citra BGR uint8.
-        konstanta: nilai C yang dikurangi dari rata-rata lokal.
-        ukuran_jendela: ukuran jendela neighborhood, harus ganjil.
-        isi_rongga_aktif: bila True, rongga di tengah objek diisi.
-
-    Mengembalikan:
-        Larik citra biner uint8.
-    """
     ukuran_jendela = max(3, int(ukuran_jendela))
     if ukuran_jendela % 2 == 0:
         ukuran_jendela += 1
@@ -127,7 +105,8 @@ def adaptive_gaussian(
         ukuran_jendela,
         int(konstanta),
     )
-    return _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    mask = _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+    return _terapkan_segmentasi(citra, mask)
 
 
 def multi_level_otsu(
@@ -135,19 +114,6 @@ def multi_level_otsu(
     jumlah_kelas: int = 3,
     isi_rongga_aktif: bool = True,
 ) -> TipeCitra:
-    """Segmentasi dengan ambang Otsu bertingkat pada tiga kelas.
-
-    Ambang dihitung sendiri dari histogram citra, lalu tiap piksel diberi
-    label kelas 0, 1, atau 2 berdasarkan posisinya terhadap kedua ambang.
-
-    Parameter:
-        citra: larik citra BGR uint8.
-        jumlah_kelas: jumlah kelas, saat ini hanya 3 yang didukung.
-        isi_rongga_aktif: bila True, rongga di setiap kelas diisi.
-
-    Mengembalikan:
-        Larik citra uint8 dengan nilai visual 0, 127, dan 255 untuk tiga kelas.
-    """
     if jumlah_kelas != 3:
         raise GalatCitra("Multi level Otsu saat ini hanya mendukung tiga kelas.")
 
@@ -155,18 +121,16 @@ def multi_level_otsu(
     histogram = np.bincount(abu.ravel(), minlength=256).astype(np.float64)
     total = histogram.sum()
     if total == 0:
-        return abu.copy()
+        return citra.copy()
 
-    # Cari satu ambang Otsu terlebih dahulu
     ambang_otsu = _otsu_ambang(histogram, total)
-
-    # Histogram dibelah menjadi dua bagian, lalu dicari ambang pada bagian kedua
     bagian = slice(ambang_otsu + 1, 256)
     histogram_bawah = histogram[: ambang_otsu + 1]
     histogram_atas = histogram[bagian]
     if histogram_atas.sum() == 0:
-        hasil = np.where(abu > ambang_otsu, 255, 0).astype(np.uint8)
-        return _terapkan_isi_rongga(hasil, isi_rongga_aktif)
+        mask = np.where(abu > ambang_otsu, 255, 0).astype(np.uint8)
+        mask = _terapkan_isi_rongga(mask, isi_rongga_aktif)
+        return _terapkan_segmentasi(citra, mask)
 
     ambang_kedua = _otsu_ambang(
         histogram_atas,
@@ -179,14 +143,21 @@ def multi_level_otsu(
     label[abu > ambang_kedua] = 2
 
     if isi_rongga_aktif:
-        # Setiap kelas diperlakukan sebagai wilayah terpisah
         for kelas in (1, 2):
             wilayah = isi_rongga((label == kelas).astype(np.uint8) * 255)
             label[wilayah > 0] = kelas
 
-    # Label 0, 1, 2 terlalu gelap untuk ditampilkan. Petakan ke tiga tingkat
-    # abu yang jelas agar hasil segmentasi langsung terlihat.
-    return np.take(np.array([0, 127, 255], dtype=np.uint8), label)
+    # Hasil berwarna untuk setiap kelas
+    if citra.ndim == 2:
+        # Jika grayscale, kembali ke format standar np.array([0, 127, 255])
+        return np.take(np.array([0, 127, 255], dtype=np.uint8), label)
+
+    hasil = np.zeros_like(citra)
+    for kelas in (1, 2):
+        mask = (label == kelas).astype(np.uint8) * 255
+        warna = (127, 127, 127) if kelas == 1 else (255, 255, 255)
+        hasil = cv2.bitwise_or(hasil, np.full_like(citra, warna, dtype=np.uint8) if False else cv2.bitwise_and(citra, citra, mask=mask))
+    return hasil
 
 
 def _otsu_ambang(histogram: np.ndarray, total: float, offset: int = 0) -> int:
@@ -221,34 +192,11 @@ def _otsu_ambang(histogram: np.ndarray, total: float, offset: int = 0) -> int:
 
 
 def highlight(citra: TipeCitra, ambang: int = 180, isi_rongga_aktif: bool = True) -> TipeCitra:
-    """Segmentasi bagian citra yang terang (highlight).
-
-    Kanal brightness pada ruang HSV dipakai sebagai acuan, lalu citra asli
-    disalin hanya pada piksel yang melewati ambang.
-
-    Parameter:
-        citra: larik citra BGR uint8.
-        ambang: ambang brightness 0 sampai 255.
-        isi_rongga_aktif: bila True, rongga di tengah objek diisi.
-
-    Mengembalikan:
-        Larik citra BGR uint8 dengan bagian gelap menjadi hitam.
-    """
     ambang = int(max(0, min(255, ambang)))
-    if citra.ndim == 2:
-        abu = citra
-    else:
-        kanal_v = cv2.cvtColor(citra, cv2.COLOR_BGR2HSV)[:, :, 2]
-        abu = kanal_v
-
-    _, mask = cv2.threshold(abu, ambang, 255, cv2.THRESH_BINARY)
+    kanal_v = cv2.cvtColor(citra, cv2.COLOR_BGR2HSV)[:, :, 2] if citra.ndim == 3 else citra
+    _, mask = cv2.threshold(kanal_v, ambang, 255, cv2.THRESH_BINARY)
     mask = _terapkan_isi_rongga(mask, isi_rongga_aktif)
-
-    if citra.ndim == 2:
-        return cv2.bitwise_and(abu, mask)
-
-    hasil = cv2.bitwise_and(citra, cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR))
-    return hasil
+    return _terapkan_segmentasi(citra, mask)
 
 
 def hitung_komponen(citra: TipeCitra) -> int:

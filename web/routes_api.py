@@ -94,6 +94,7 @@ def info():
         tim=config.TEAM_MEMBERS,
         github=config.GITHUB_URL,
         youtube=config.YOUTUBE_URL,
+        tutorial=config.TUTORIAL_URL,
         hak_cipta=config.COPYRIGHT,
         batas_unggah=config.BATAS_UNGGAH,
         format=list(config.FORMAT_UNDUH),
@@ -160,18 +161,13 @@ def form_operasi(action: str):
 @api.post("/operasi/<action>")
 @_aman
 def jalankan(action: str):
-    """Menjalankan operasi yang punya mesin pemrosesan, atau mengirim pesan."""
+    """Menjalankan operasi dan menyimpan pratinjau hasilnya."""
     kiriman = request.get_json(silent=True) or {}
     ruang = ruang_kerja()
     operasi = ruang.siapkan(action, periksa_b=False)
     parameter = ruang.baca_parameter(operasi, kiriman.get("params") or {})
     keadaan = ruang.jalankan(action, parameter)
-    pesan = keadaan.pop("pesan_terakhir", None)
-    if not pesan:
-        pesan = (keadaan.get("hasil") or {}).get("pesan")
-    if not pesan:
-        pesan = f"Operasi '{operasi.judul}' selesai."
-    return _ok(state=keadaan, pesan=pesan)
+    return _ok(state=keadaan, pesan=keadaan["hasil"]["pesan"])
 
 
 # ------------------------------------------------------------ area hasil dan sesi

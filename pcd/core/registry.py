@@ -150,22 +150,7 @@ from . import daftar_segment  # noqa: E402
 # Operasi ringan dan deterministik yang dapat dipratinjau langsung saat
 # parameter berubah. Operasi berat, acak, memakai kernel, dan seluruh operasi
 # Geometric tetap dijalankan manual lewat tombol Jalankan.
-_AKSI_PRATINJAU = {
-    "basic.thresholding",
-    "edge.canny",
-    "edge.log",
-    "edge.sobel",
-    "enh.brightness",
-    "enh.contrast",
-    "enh.geom_correction",
-    "enh.highboost",
-    "enh.median",
-    "seg.adaptive_gaussian",
-    "seg.adaptive_mean",
-    "seg.highlight",
-    "seg.multi_otsu",
-    "seg.otsu",
-}
+_AKSI_PRATINJAU = set()
 
 # Langkah penggeser untuk parameter angka pada operasi pratinjau dan kendali
 # manual Geometric. Penggeser Geometric tidak memicu pratinjau otomatis.
